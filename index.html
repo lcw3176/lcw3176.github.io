@@ -14,7 +14,6 @@
 </head>
 
 <body>
-    <div class="pageloader"><span class="title">Loading...</span></div>
     <div class="container is-fluid">
         <div class="columns">
             <div class="column m-5"></div>
@@ -30,8 +29,9 @@
                     </div>
 
                     <div class="column has-text-right has-text-centered-mobile">
-                        <a href="https://github.com/lcw3176"><i class="fab fa-github fa-3x mb-3"></i></a>
                         <div class="content is-vcentered">
+                            <span class="tag is-dark mr-1">Github</span><a
+                                href="https://github.com/lcw3176">https://github.com/lcw3176</a>
                             <p><span class="tag is-dark mr-1">Email</span>chanwoo3176@naver.com</p>
                         </div>
                     </div>
@@ -54,22 +54,51 @@
                     <div class="column">
                         <div class="content">
                             <p>
-                                AVR MCU 수업 중 시작한 코딩에 흥미를 느껴, 다양한 개발 분야를 접해보았습니다. 특정 플랫폼이나 언어를 고집하지 않고,
-                                '개발'이라는 행위 자체를 즐기고 있습니다.<br>
+                                AVR MCU 수업 중 시작한 코딩에 흥미를 느껴, 다양한 개발 분야를 접해 보았습니다.<br>
+                                특정 플랫폼이나 언어를 고집하지 않고, '개발'이라는 행위 자체를 즐기고 있으며,<br>
                                 요즘은 사용자에게 서비스 제공이 간결한 웹 개발에 관심이 많습니다.<br>
-                                주변 사람들이 겪는 <strong>현실의 문제</strong>를 <strong>소프트웨어로 해결</strong>하는 것을 좋아합니다.
+                                주변 사람들이 겪는 <strong>현실의 문제</strong>를 <strong>소프트웨어로 해결</strong>하는 것을 좋아하며,<br>
                                 친구가 회사에서 겪는 문제를 소프트웨어로 해결해주고, 해당 <strong>서비스를 오픈한 경험</strong>이 있습니다.<br>
-                                도시 공학 계열에서 계획도를 그릴 때 사용되는 배경 위성 이미지를 제공해주는 서비스로,
-                                일반적인 업무 방식은 지도를 일일이 확대 후 한 장씩 캡쳐, 포토샵으로 이어붙이는 방식을 사용, 많은 시간이 소요되는 작업을
-                                <strong>1~2시간 -> 10초</strong>로 단축시켰습니다.<br>
-                                누적 사용자 4,300명, 평일 평균 사용자 40~50명 으로 현재 약 1년간 <strong>지속적으로 운영</strong>되고 있고,<br>
-                                만족스러운 유저 경험을 위해 계속해서 기능 추가 및 최적화를 진행중입니다.
                             </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <div class="columns mt-5">
+            <div class="column is-8 is-offset-2">
+                <div class="is-divider" data-content="Mapshot"></div>
+            </div>
+        </div>
+
+
+        <div class="columns">
+            <div class="column is-8 is-offset-2">
+                <div class="columns">
+                    <div class="column content">
+                        <figure>
+                            <img src="./image/sample.jpg">
+                            <img src="./image/sample2.jpg">
+                            <figcaption>
+                                도시 계획도 예시
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
+
+                <div class="columns">
+                    <div class="column content">
+                        <p>도시 공학 계열에서 계획도를 그릴 때 사용되는 배경 위성 이미지를 제공해주는 서비스로,<br>
+                            일반적인 업무 방식은 지도를 일일이 확대 후 한 장씩 캡쳐, 포토샵으로 이어붙이는 방식을 사용, 많은 시간이 소요되는 작업입니다.<br>
+                            해당 과정을 자동화 한 서비스로, 작업 시간을 <strong>1~2시간 -> 10초</strong>로 단축시켰습니다.<br>
+                            누적 사용자 4,300명, 평일 평균 사용자 40~50명 으로 현재 약 1년간 <strong>지속적으로 운영</strong>되고 있고,<br>
+                            만족스러운 유저 경험을 위해 계속해서 기능 추가 및 최적화를 진행중입니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <div class="columns mt-5">
             <div class="column is-8 is-offset-2">
@@ -107,8 +136,6 @@
                                 <li>사이트 접속불가 장애 대응 및 도메인 이전 경험</li>
                                 <li><a href="https://www.emailjs.com/">Email.js</a>를 통한 소통 시스템 구축</li>
                                 <li>외부 Image API 서버 구축, 서비스 확장</li>
-                                <li>더 자세한 내용은 <a
-                                        href="https://github.com/lcw3176/ProjectIssues/tree/master/Mapshot_Web">ProjectIssues</a>에 기술</li>
                             </ul>
                         </div>
                     </div>
@@ -143,7 +170,7 @@
                         <div class="content">
                             <ul>
                                 <li>카카오 지도 생성, 캡쳐 후 Mapshot 서비스로 전송</li>
-                                <li>CORS 정책 우회를 위한 API 서버</li>
+                                <li>SOP 제한 우회를 위한 API 서버</li>
                                 <li>이미지 가공 순차처리 구현, 메모리 부족 및 타임아웃 방지</li>
                                 <li>Slack을 통한 에러 리포팅, github issues에 등록 후 분석 및 처리</li>
                                 <li>유저가 사용 전 요청 전송, 서버 작동 딜레이 최소화</li>
@@ -154,47 +181,9 @@
             </div>
         </div>
 
+
         <div class="divider">
 
-        </div>
-
-
-        <div class="columns">
-            <div class="column is-8 is-offset-2">
-                <div class="columns">
-                    <div class="column is-3 has-text-centered-mobile">
-                        <div class="content">
-                            <h2>WhoAreYou</h2>
-                            <h6>Spring API 서버</h6>
-                            <p><a href="https://github.com/lcw3176/WhoAreYou_Spring"><em>Source Code</em></a></p>
-                            <h6>진행 기간</h6>
-                            <p>21.04 ~ 21.06</p>
-                        </div>
-                    </div>
-
-                    <div class="column">
-                        <div class="content has-text-centered">
-                            <em>모바일 앱과 센서를 위한 API 서버</em>
-                        </div>
-
-                        <div class="content">
-                            <ul>
-                                <li>마그네틱 센서 정보를 모바일 앱으로 전송하기 위한 서버</li>
-                                <li>소켓을 이용한 실시간 데이터 교환</li>
-                                <li>JWT를 통한 유저 권한 부여</li>
-                                <li>작동 모습: <a href="https://www.youtube.com/watch?v=a5a6oeBi8YY">https://www.youtube.com/watch?v=a5a6oeBi8YY</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="columns mt-5">
-            <div class="column is-8 is-offset-2">
-                <div class="is-divider" data-content="OpenSources"></div>
-            </div>
         </div>
 
         <div class="columns">
@@ -224,6 +213,137 @@
                             </ul>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="columns mt-5">
+            <div class="column is-8 is-offset-2">
+                <div class="is-divider" data-content="Service Architecture"></div>
+            </div>
+        </div>
+
+
+        <div class="columns">
+            <div class="column is-8 is-offset-2">
+                <div class="columns">
+                    <div class="column content">
+                        <figure>
+                            <img src="./image/flow.png">
+                            <figcaption>
+                                서비스 작동 구조도
+                            </figcaption>
+                        </figure>
+                    </div>
+                </div>
+
+                <div class="columns">
+                    <div class="column content">
+                        <p>
+                            사용자의 요청에 따라 각각 다른 방식으로 작동합니다.<br>
+                            네이버 지도를 이용한 배경 사진을 요청할 경우는 CORS 문제가 없기 때문에 클라이언트의 브라우저에서<br>
+                            지도 API에 알맞은 좌표의 사진을 요청, 이미지를 합친 후 파일로 제공합니다.<br>
+                            하지만 카카오 지도는 SOP 제한 때문에, 유저 브라우저에서 자체 가공이 불가능하고, Javascript를 통해 동적으로 지도가 생성됩니다.<br>
+                            그래서 Selenium을 통해 서버 내의 다른 컨트롤러로 이미지 생성 요청 후, 생성이 완료되면 화면을 캡쳐한 후에<br>
+                            이미지 파일을 바이트 코드로 Mapshot 서비스에 전송해 주는 방식으로 작동합니다.<br>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="columns mt-5">
+            <div class="column is-8 is-offset-2">
+                <div class="is-divider" data-content="Problems & Solutions"></div>
+            </div>
+        </div>
+
+        <div class="columns">
+            <div class="column is-8 is-offset-2">
+                <div class="content has-text-centered">
+                    <h2>서비스 접속 장애</h2>
+                    <h6>사이트가 펑펑</h6>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider">
+            
+        </div>
+
+        <div class="columns">
+            <div class="column is-8 is-offset-2">
+                <div class="content has-text-centered">
+                    <h2>서비스 확장을 위한 레이어 서버 구축</h2>
+                    <h6>대답 없는 서버</h6>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider">
+            
+        </div>
+
+        <div class="columns">
+            <div class="column is-8 is-offset-2">
+                <div class="content has-text-centered">
+                    <h2>서비스 확장을 위한 카카오 서버 구축</h2>
+                    <h6>눈 좀 뜨세요 헤로쿠씨</h6>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider">
+            
+        </div>
+
+        <div class="columns">
+            <div class="column is-8 is-offset-2">
+                <div class="content has-text-centered">
+                    <h2>호환성 이슈</h2>
+                    <h6>IE 멈춰</h6>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="divider">
+            
+        </div>
+        
+        <div class="columns">
+            <div class="column is-8 is-offset-2">
+                <div class="content has-text-centered">
+                    <h2>사이트 패치 타이밍 문제</h2>
+                    <h6>명분 찾기 대장정</h6>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="divider">
+            
+        </div>
+
+        <div class="columns">
+            <div class="column is-8 is-offset-2">
+                <div class="content has-text-centered">
+                    <h2>소스 코드 관리</h2>
+                    <h6>스파게티 한 그릇 추가요</h6>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider">
+            
+        </div>
+
+        <div class="columns">
+            <div class="column is-8 is-offset-2">
+                <div class="content has-text-centered">
+                    <h2>소통 창구</h2>
+                    <h6>피드백은 귀하다</h6>
                 </div>
             </div>
         </div>
