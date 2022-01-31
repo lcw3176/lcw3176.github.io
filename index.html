@@ -59,8 +59,11 @@
                                 요즘은 사용자에게 서비스 제공이 간결한 웹 개발에 관심이 많습니다.<br>
                                 주변 사람들이 겪는 <strong>현실의 문제</strong>를 <strong>소프트웨어로 해결</strong>하는 것을 좋아합니다.
                                 친구가 회사에서 겪는 문제를 소프트웨어로 해결해주고, 해당 <strong>서비스를 오픈한 경험</strong>이 있습니다.<br>
-                                현재 약 1년간 <strong>지속적으로 운영</strong>되고 있고, 일일 접속량은 40~50건에 불과하지만 만족스러운 유저 경험을 위해 계속해서
-                                기능 추가 및 최적화를 진행중입니다.
+                                도시 공학 계열에서 계획도를 그릴 때 사용되는 배경 위성 이미지를 제공해주는 서비스로,
+                                일반적인 업무 방식은 지도를 일일이 확대 후 한 장씩 캡쳐, 포토샵으로 이어붙이는 방식을 사용, 많은 시간이 소요되는 작업을
+                                <strong>1~2시간 -> 10초</strong>로 단축시켰습니다.<br>
+                                누적 사용자 4,300명, 평일 평균 사용자 40~50명 으로 현재 약 1년간 <strong>지속적으로 운영</strong>되고 있고,<br>
+                                만족스러운 유저 경험을 위해 계속해서 기능 추가 및 최적화를 진행중입니다.
                             </p>
                         </div>
                     </div>
@@ -95,13 +98,17 @@
 
                         <div class="content">
                             <ul>
-                                <li>도시 공학 계열에서 계획도를 그릴 때 사용되는 배경 위성 이미지를 제공해주는 서비스</li>
-                                <li>일반적인 업무 방식은 지도를 일일이 확대 후 한 장씩 캡쳐, 포토샵으로 이어붙이는 방식을 사용, 많은 시간 소요</li>
-                                <li>기존 업무 프로세스 <strong>1~2시간 -> 10초</strong>로 작업시간 단축</li>
-                                <li>누적 사용자 4,300명, 평일 평균 사용자 40~50명</li>
-                                <li>실 서비스를 운영하며 <a
-                                        href="https://github.com/lcw3176/ProjectIssues/tree/master/Mapshot_Web">많은 고민 &
-                                        해결</a>을 경험</li>
+                                <li>Babel을 통한 IE 호환성 문제 해결</li>
+                                <li><a href="https://obfuscator.io/">Javasciprt obfuscator</a>를 통한 소스 코드 난독화</li>
+                                <li>Google Analytics를 통한 시간별 접속량 측정 및 데이터 활용</li>
+                                <li>핵심 기능들 라이브러리화, UI 코드와 분리</li>
+                                <li>min.js, cdn 서버를 통한 사이트 로딩 속도 향상</li>
+                                <li>Bootstrap -> <a href="https://bulma.io/">Bulma</a>를 통한 css 경량화, JQuery 의존도 제거</li>
+                                <li>사이트 접속불가 장애 대응 및 도메인 이전 경험</li>
+                                <li><a href="https://www.emailjs.com/">Email.js</a>를 통한 소통 시스템 구축</li>
+                                <li>외부 Image API 서버 구축, 서비스 확장</li>
+                                <li>더 자세한 내용은 <a
+                                        href="https://github.com/lcw3176/ProjectIssues/tree/master/Mapshot_Web">ProjectIssues</a>에 기술</li>
                             </ul>
                         </div>
                     </div>
@@ -120,7 +127,7 @@
                     <div class="column is-3 has-text-centered-mobile">
                         <div class="content">
                             <h2>MapshotServer</h2>
-                            <h6>Java & Spring 서버</h6>
+                            <h6>Spring Boot Image API 서버</h6>
                             <p><a href="https://mapshot.herokuapp.com"><em>https://mapshot.herokuapp.com</em></a></p>
                             <p><a href="https://github.com/lcw3176/MapshotServer"><em>Source Code</em></a></p>
                             <h6>진행 기간</h6>
@@ -130,18 +137,16 @@
 
                     <div class="column">
                         <div class="content has-text-centered">
-                            <em>Mapshot 서비스의 프록시 서버</em>
+                            <em>Mapshot 서비스의 이미지 API 서버</em>
                         </div>
 
                         <div class="content">
                             <ul>
-                                <li>Mapshot의 유저 요청에 따라 <a href="https://github.com/lcw3176/ProjectIssues/tree/master/MapshotServer/%EC%84%9C%EB%B9%84%EC%8A%A4%ED%99%95%EC%9E%A52%ED%8E%B8">기능 확장</a>을 위한 프록시 서버</li>
                                 <li>카카오 지도 생성, 캡쳐 후 Mapshot 서비스로 전송</li>
-                                <li>Slack을 통해 에러 리포팅, github issues에 등록해 에러 처리중</li>
-                                <li><a href="https://github.com/lcw3176/Mapshot-Kakao-Server">초창기 서비스</a>에서 많은 수정,
-                                    <strong>응답 속도 1/2 수준</strong>으로 개선 (약 28초 -> 10초 내외)</li>
-                                <li><a href="https://github.com/lcw3176/ProjectIssues/tree/master/MapshotServer">여러가지
-                                        문제점</a>들 계속 개선중</li>
+                                <li>CORS 정책 우회를 위한 API 서버</li>
+                                <li>이미지 가공 순차처리 구현, 메모리 부족 및 타임아웃 방지</li>
+                                <li>Slack을 통한 에러 리포팅, github issues에 등록 후 분석 및 처리</li>
+                                <li>유저가 사용 전 요청 전송, 서버 작동 딜레이 최소화</li>
                             </ul>
                         </div>
                     </div>
@@ -174,9 +179,9 @@
 
                         <div class="content">
                             <ul>
-                                <li>학교 학기별 프로젝트의 일환으로 진행</li>
                                 <li>마그네틱 센서 정보를 모바일 앱으로 전송하기 위한 서버</li>
-                                <li>다양한 플랫폼간의 정보 교환에 대해 경험</li>
+                                <li>소켓을 이용한 실시간 데이터 교환</li>
+                                <li>JWT를 통한 유저 권한 부여</li>
                                 <li>작동 모습: <a href="https://www.youtube.com/watch?v=a5a6oeBi8YY">https://www.youtube.com/watch?v=a5a6oeBi8YY</a></li>
                             </ul>
                         </div>
@@ -213,6 +218,7 @@
                             <ul>
                                 <li>Naver Static Map을 합치기 쉽게 만든 라이브러리</li>
                                 <li>좌표에 따른 위도 보정 기능, Naver 로고 단순화 기능 탑재</li>
+                                <li>npm을 통한 난독화 및 Babel 작업 자동화</li>
                                 <li>Mapshot 서비스의 <strong>UI 코드와 기능 코드 분리를 위해 제작</strong>, 혹시 필요할 사람들을 위해 오픈소스화</li>
                                 <li><strong>꾸준한 기능 및 버그 패치 & 문서화</strong> 진행중</li>
                             </ul>
@@ -242,7 +248,7 @@
                             <ul>
                                 <li>Java, Spring, SpringBoot</li>
                                 <li>Node.js</li>
-                                <li>Cloud Server(Oracle, Naver, Heroku..)</li>
+                                <li>Cloud Server(Oracle, Naver, Heroku, Netlify..)</li>
                             </ul>
                         </div>
                     </div>
@@ -276,7 +282,6 @@
                             <ul>
                                 <li>HTML/CSS, Javascript</li>
                                 <li>Thymeleaf</li>
-                                <li>Netlify</li>
                             </ul>
                         </div>
                     </div>
