@@ -1,0 +1,103 @@
+---
+layout: post
+title:  "Deque"
+date:   2022-11-26 13:45:17 +0900
+categories: jekyll update
+---
+# Deque
+
+## 개요, 특징
+* 양방향 입, 출력 (**D** ouble **E** nded **Que** ue)
+* 스크롤(scroll): 입력이 한 쪽으로만 가능하도록 제한
+* 셀프(shelf): 출력이 한 쪽으로만 가능하도록 제한
+
+## 장점
+* 삽입(앞, 뒤) 
+    - O(1)
+    - 앞, 뒤 모두 추가 빠름
+* 삭제
+    - O(1)
+    - 앞, 뒤 pop()
+* 가변적 크기, 탐색(배열로 구현 시 O(1))
+    - 보통 배열로 많이 구현하는 것 같다
+    - 나는 노드로 구현해서 탐색은 느릴 듯 하다
+    - 대신 크기 조절은 배열보다 빠르지 않을까
+## 단점
+* 삽입(중간)
+    - 데이터 중간에 삽입 힘듬
+    - 이건 노드로 구현한게 조금 더 낫긴 할 듯 하다
+
+## 기타
+- 우선순위 조절에 사용
+    - 처음 들어온 데이터나, 마지막으로 들어온 데이터를 빼내서 순위를 올려야 할 경우 사용
+    - 처음 들어온 데이터 올리기 -> 스택 불가능 
+    - 마지막으로 들어온 데이터 올리기 -> 큐 불가능
+    - 둘 다 가능 -> 덱
+
+
+```python
+class Node:
+    def __init__(self):
+        self.data = None
+        self.next = None
+        self.before = None
+
+class Deque:
+    def __init__(self):
+        self.front = Node()
+        self.rear = Node()
+        self.size = 0
+
+        
+    def push_front(self, data):
+        if self.size == 0:
+            self.front.data = data
+            self.front.next = self.rear
+            self.rear.before = self.front
+        else:  
+            node = Node()
+            node.data = data
+            self.front.before = node
+            node.next = self.front
+            self.front = node
+        self.size += 1
+
+
+    def pop_front(self):
+        value = self.front.data
+        self.front = self.front.next
+        self.size -= 1
+        return value
+
+
+    def push_back(self, data):
+        if self.size == 0:
+            self.rear.data = data
+            self.rear.before = self.front
+            self.front.next = self.rear
+        else:
+            node = Node()
+            node.data = data
+            self.rear.next = node
+            node.before = self.rear
+            self.rear = node
+        self.size += 1
+
+
+    def pop_back(self):
+        value = self.rear.data
+        self.rear = self.rear.before
+        self.size -= 1
+        return value
+
+
+    def empty(self):
+        if self.size == 0:
+            return True
+        return False 
+
+
+    def __len__(self):
+        return self.rear
+
+```

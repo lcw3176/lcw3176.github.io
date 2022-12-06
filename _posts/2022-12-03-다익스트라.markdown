@@ -1,0 +1,70 @@
+---
+layout: post
+title:  "다익스트라"
+date:   2022-12-03 21:33:34 +0900
+categories:
+---
+# 다익스트라 알고리즘
+## 개요, 특징
+- 하나의 출발점에서 모든 정점까지의 최단 거리 계산
+- 구현방법   
+    - 우선순위 큐
+    - 파이썬은 heapq 모듈 사용하면 편함
+- 시간 복잡도
+    - 간선 탐색 
+        - 각 노드는 한번씩 방문, 
+        - 고로 간선도 한번씩 방문
+        - O(E)
+    - 우선 순위 큐 데이터 입,출력
+        - 검사 시 거리값 리스트 갱신, 데이터 저장
+        - 우선 순위 큐 재정렬, 성질 유지
+        - O(ElogE)
+    - 총 시간 복잡도
+        - O(E) + O(ElogE) = O(ElogE)
+
+
+## 대표적인 문제들
+- 최단 경로 탐색 알고리즘
+- 지하철 노선도
+- 네비게이션
+- 기타 최단거리를 찾는 문제들
+
+
+```python
+import heapq  
+
+def dijkstra(graph, start):
+    distances = {node: float("inf") for node in graph} 
+    distances[start] = 0  
+
+    queue = []
+    heapq.heappush(queue, [distances[start], start])  
+
+    while queue: 
+        current_distance, current_destination = heapq.heappop(queue) 
+
+        if distances[current_destination] < current_distance: 
+            continue
+        
+        for new_destination, new_distance in graph[current_destination].items():
+            distance = current_distance + new_distance  
+
+            if distance < distances[new_destination]:  
+                distances[new_destination] = distance
+                heapq.heappush(queue, [distance, new_destination])  
+        
+    return distances
+
+
+graph = {
+    'A': {'B': 8, 'C': 1, 'D': 2},
+    'B': {},
+    'C': {'B': 5, 'D': 2},
+    'D': {'E': 3, 'F': 5},
+    'E': {'F': 1},
+    'F': {'A': 5}
+}
+
+print(dijkstra(graph, "A"))
+
+```

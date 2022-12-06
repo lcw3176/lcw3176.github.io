@@ -1,0 +1,93 @@
+---
+layout: post
+title:  "Queue"
+date:   2022-11-15 15:32:55 +0900
+categories:
+---
+# Queue
+
+## 개요, 특징
+* FIFO, 선입선출, 대기열
+* Back으로 데이터 입력, Front로 데이터 출력
+* 앞과 뒤의 인덱스를 나타내는 front, rear 존재
+* 데이터 입력은 enqueue, 데이터 출력은 dequeue
+* 순차처리, BFS
+
+## 장점
+*  삽입 
+    - O(1)
+    - back에 데이터 추가
+* 삭제
+    - O(1)
+    - front에서 데이터 인출
+## 단점
+* 탐색
+    - 중간에 위치한 데이터 접근 힘듬
+
+## 기타
+* 스택과 반대로 동작
+* 음악 재생 프로그램 만들때 많이 사용함, [StrawberryM](https://github.com/lcw3176/StrawberryM)
+    - 다음 재생곡
+    - 노래 다운로드 대기열
+
+```python
+class Queue:
+    def __init__(self, size):
+        self.item = [0 for i in range(size)]
+        self.front = 0
+        self.rear = 0
+        self.init_size = size
+
+
+    def enqueue(self, data):
+        if self.full():
+            raise IndexError("Full queue")
+        self.item[self.rear] = data
+        self.rear += 1
+
+
+    def dequeue(self):
+        if self.empty():
+            raise IndexError("Empty queue")
+
+        value = self.item[self.front]
+        for i in range(self.front + 1, self.rear):
+            self.item[i - 1] = self.item[i]
+        
+        self.rear -= 1
+        del self.item[self.rear]
+
+
+        return value
+
+
+    def empty(self):
+        if self.front == self.rear:
+            return True
+        return False
+
+
+    def size(self):
+        return len(self.item)
+
+
+    def peek(self):
+        if self.empty():
+            raise IndexError("Empty queue")
+
+        return self.item[self.front]
+
+
+    def full(self):
+        if self.init_size == self.rear:
+            return True
+        return False
+
+
+    def __len__(self):
+        return self.rear
+
+
+    def __str__(self):
+        return str(self.item[::1])
+```
