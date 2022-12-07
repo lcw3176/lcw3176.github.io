@@ -32,10 +32,10 @@
         <div class="column is-half is-offset-one-quarter mt-5 has-text-centered">
 
             <div class="inputoutput">
-                <div class="file is-boxed">
+                <div class="file is-boxed is-centered">
                     <label class="file-label">
                         <figure class="image">
-                            <img id="imageSrc" />
+                            <img id="imageSrcCopy" style="width: 400px; height: auto;"/>
                         </figure>
 
                         <input type="file" id="fileInput" name="file" class="file-input" />
@@ -68,6 +68,7 @@
 
 
     <div class="inputoutput">
+        <img id="imageSrc" style="display: none;"/>
         <canvas id="canvasOutput" style="display: none;"></canvas>
     </div>
 
@@ -85,8 +86,11 @@
 
         let imgElement = document.getElementById('imageSrc');
         let inputElement = document.getElementById('fileInput');
+        let copyImgElement = document.getElementById("imageSrcCopy");
+
         inputElement.addEventListener('change', (e) => {
             imgElement.src = URL.createObjectURL(e.target.files[0]);
+            copyImgElement.src = imgElement.src;
             imgElement.onload = function () {
                 document.getElementById("startButton").style.display = "inline";
             }
