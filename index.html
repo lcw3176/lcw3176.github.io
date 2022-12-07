@@ -11,7 +11,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         #imageSrc {
-            width: 1000px;
+            width: 800px;
             height: auto;
         }
 
@@ -35,7 +35,7 @@
                 <div class="file is-boxed is-centered">
                     <label class="file-label">
                         <figure class="image">
-                            <img id="imageSrcCopy" style="width: 400px; height: auto;"/>
+                            <img id="imageSrcCopy" style="width: 400px; height: auto;" />
                         </figure>
 
                         <input type="file" id="fileInput" name="file" class="file-input" />
@@ -55,12 +55,15 @@
 
     <div class="columns">
         <div class="column is-half is-offset-one-quarter mt-5 has-text-centered">
-            <button class="button" style="display: none;" onclick="start()" id="startButton">이미지 만들기</button>
+            <button class="button" onclick="start()" style="display: none;" id="startButton">이미지 만들기</button>
         </div>
     </div>
 
+   
+
     <div class="columns">
         <div class="column is-half is-offset-one-quarter mt-5 has-text-centered">
+            <progress class="progress is-success" id="progressBar" value="0" max="100"></progress>
             <a class="subtitle" id="downloadLink"></button>
         </div>
     </div>
@@ -68,10 +71,8 @@
 
 
     <div class="inputoutput">
-        <img id="imageSrc" style="display: none;"/>
+        <img id="imageSrc" style="display: none;" />
         <canvas id="canvasOutput" style="display: none;"></canvas>
-    </div>
-
     </div>
 
 
@@ -98,12 +99,14 @@
 
         async function start() {
             document.getElementById("startButton").className = "button is-loading";
-            await makeImage();
-            document.getElementById("startButton").className = "button";
+            const textData = await makeText();
+
+            await drawImage(textData);
+
         }
 
-        function makeImage() {
-            return new Promise(function () {
+        function makeText() {
+            return new Promise(function (resolve, reject) {
                 let imgElement = document.getElementById('imageSrc');
                 let chars = ' .,-~:;=!*#$@';
                 let mat = cv.imread(imgElement);
@@ -113,26 +116,51 @@
                     h = dst.rows;
 
                 let arr = []
+                let count = 0;
 
-                for (let i = 0; i < dst.data.length; i++) {
-                    arr.push(chars[parseInt(dst.data[i] / 256 * chars.length)]);
-
-                    if (i % w == 0) {
-                        arr.push("\n");
+                function pushData() {
+                    for (let i = 0; i < 2000; i++) {
+                        arr.push(chars[parseInt(dst.data[count] / 256 * chars.length)]);
+                        
+                        document.getElementById("progressBar").value = parseInt(count / dst.data.length * 100);
+                        count++;
+                        
+                        if (count % w == 0) {
+                            arr.push("\n");
+                        }
                     }
+
+                    if (count < dst.data.length) {
+                        setTimeout(pushData, 10);
+                    } else {
+                        let lines = arr.join().split("\n");
+                        dst.delete();
+                        mat.delete();
+
+                        resolve(lines);
+                    }
+
                 }
 
-                let lines = arr.join().split("\n");
+                setTimeout(pushData, 10);
+
+            });
+        }
+
+        function drawImage(textData) {
+            return new Promise(function (resolve, reject) {
                 var canvas = document.getElementById("canvasOutput");
                 var ctx = canvas.getContext("2d");
+                let imgElement = document.getElementById('imageSrc');
+
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
                 canvas.width = imgElement.width * 5;
                 canvas.height = imgElement.height * 5;
                 ctx.font = "5px myFont";
                 ctx.fillStyle = "white";
-                for (let i = 0; i < lines.length; i++) {
-                    ctx.fillText(lines[i], 0, 0 + i * 5);
+                for (let i = 0; i < textData.length; i++) {
+                    ctx.fillText(textData[i], 0, 0 + i * 5);
                 }
 
                 canvas.toBlob(function (blob) {
@@ -142,14 +170,9 @@
                     link.innerText = "다운로드";
 
                     link.href = URL.createObjectURL(blob);
-
-                    dst.delete();
-                    mat.delete();
-
                     document.getElementById("startButton").className = "button";
                 }, 'image/jpeg');
             })
-
         }
 
 
