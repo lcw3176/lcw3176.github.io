@@ -14,29 +14,30 @@
     <meta property="og:description" content="String World">
     <meta property="og:image" content="https://lcw3176.github.io/background.jpg">
     <meta property="og:url" content="https://lcw3176.github.io/">
-    
-    <style>
 
+    <style>
         html {
             height: 100%;
-            margin: 0px; padding: 0px;
+            margin: 0px;
+            padding: 0px;
         }
 
 
-        body{
-            margin: 0px; padding: 0px;
-            background:  url('background.jpg');
+        body {
+            margin: 0px;
+            padding: 0px;
+            background: url('background.jpg');
             background-repeat: no-repeat;
             background-size: auto;
-            height: 100%;
+            height: 150%;
         }
 
-        #app{
+        #app {
             min-height: 100%;
             border-radius: 30px;
-            background-color: rgba(255,255,192,0.1);
+            background-color: rgba(255, 255, 192, 0.1);
             backdrop-filter: blur(1px);
-            box-shadow: 2px 7px 15px 8px rgba(0,0,0,0.3);
+            box-shadow: 2px 7px 15px 8px rgba(0, 0, 0, 0.3);
         }
 
         #imageSrc {
@@ -57,17 +58,17 @@
                 <!-- <h1 class="title">String World</h1> -->
             </div>
         </div>
-    
+
         <div class="columns">
             <div class="column is-half is-offset-one-quarter mt-5 has-text-centered">
-    
+
                 <div class="inputoutput">
                     <div class="file is-boxed is-centered">
                         <label class="file-label">
                             <figure class="image">
-                                <img id="imageSrcCopy" style="width: 200px; height: auto;" />
+                                <img id="imageSrcCopy" style="width: 300px; height: auto;" />
                             </figure>
-    
+
                             <input type="file" id="fileInput" name="file" class="file-input" />
                             <span class="file-cta">
                                 <span class="file-icon">
@@ -82,31 +83,44 @@
                 </div>
             </div>
         </div>
-    
+
         <div class="columns">
             <div class="column is-half is-offset-one-quarter mt-5 has-text-centered">
-                <button class="button" onclick="start()" style="display: none;" id="startButton">이미지 만들기</button>
+                <div class="select">
+                    <select onchange="changeLevel(this)">
+                        <option value="1">원본 화질 유지</option>
+                        <option value="2">1 / 2로 축소</option>                        
+                        <option value="3">1 / 3로 축소</option>
+                        <option value="4">1 / 4로 축소</option>
+                    </select>
+                </div>
             </div>
         </div>
-    
-       
-    
+
+
+        <div class="columns">
+            <div class="column is-half is-offset-one-quarter mt-5 has-text-centered">
+                <button class="button" onclick="start()" id="startButton">텍스트로 만들기</button>
+            </div>
+        </div>
+
+
         <div class="columns">
             <div class="column is-half is-offset-one-quarter mt-5 has-text-centered">
                 <progress class="progress is-success" id="progressBar" value="0" max="100"></progress>
                 <a class="subtitle has-text-success" id="downloadLink"></button>
             </div>
         </div>
-    
-    
-    
+
+
+
         <div class="inputoutput">
             <img id="imageSrc" style="display: none;" />
             <canvas id="canvasOutput" style="display: none;"></canvas>
         </div>
-    
+
     </div>
-   
+
 
     <script type="text/javascript">
         window.onload = function () {
@@ -120,16 +134,28 @@
         let imgElement = document.getElementById('imageSrc');
         let inputElement = document.getElementById('fileInput');
         let copyImgElement = document.getElementById("imageSrcCopy");
+        let dividedNumber = 1;
+        let imageHeight = 0;
+        let imageWidth = 0
 
         inputElement.addEventListener('change', (e) => {
             imgElement.src = URL.createObjectURL(e.target.files[0]);
             copyImgElement.src = imgElement.src;
             imgElement.onload = function () {
-                document.getElementById("startButton").style.display = "inline";
+
             }
         }, false);
 
+        function changeLevel(selectObj){
+            dividedNumber = parseInt(selectObj.value);
+        }
+
         async function start() {
+            if(imgElement.src == ""){
+                alert("사진을 먼저 업로드해주세요");
+                return;
+            }
+
             document.getElementById("startButton").className = "button is-loading";
             const textData = await makeText();
 
@@ -141,9 +167,16 @@
             return new Promise(function (resolve, reject) {
                 let imgElement = document.getElementById('imageSrc');
                 let chars = ' .,-~:;=!*#$@';
-                let mat = cv.imread(imgElement);
+                let src = cv.imread(imgElement);
+                imageWidth = src.cols / dividedNumber;
+                imageHeight = src.rows / dividedNumber;
+
+                let dsize = new cv.Size(src.cols / dividedNumber, src.rows / dividedNumber);
+                let rsz = new cv.Mat();
                 let dst = new cv.Mat();
-                cv.cvtColor(mat, dst, cv.COLOR_RGBA2GRAY, 0);
+
+                cv.resize(src, rsz, dsize, 0, 0, cv.INTER_AREA);
+                cv.cvtColor(rsz, dst, cv.COLOR_RGBA2GRAY, 0);
                 let w = dst.cols,
                     h = dst.rows;
 
@@ -153,10 +186,10 @@
                 function pushData() {
                     for (let i = 0; i < 3000; i++) {
                         arr.push(chars[parseInt(dst.data[count] / 256 * chars.length)]);
-                        
+
                         document.getElementById("progressBar").value = parseInt(count / dst.data.length * 100);
                         count++;
-                        
+
                         if (count % w == 0) {
                             arr.push("\n");
                         }
@@ -167,7 +200,8 @@
                     } else {
                         let lines = arr.join().split("\n");
                         dst.delete();
-                        mat.delete();
+                        rsz.delete();
+                        src.delete();
 
                         resolve(lines);
                     }
@@ -183,12 +217,11 @@
             return new Promise(function (resolve, reject) {
                 var canvas = document.getElementById("canvasOutput");
                 var ctx = canvas.getContext("2d");
-                let imgElement = document.getElementById('imageSrc');
 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                canvas.width = imgElement.width * 5;
-                canvas.height = imgElement.height * 5;
+                canvas.width = imageWidth * 5;
+                canvas.height = imageHeight * 5;
                 ctx.font = "5px myFont";
                 ctx.fillStyle = "white";
                 for (let i = 0; i < textData.length; i++) {
@@ -198,7 +231,6 @@
                 canvas.toBlob(function (blob) {
                     var link = document.getElementById('downloadLink');
                     link.download = 'strix.jpg';
-                    link.href = canvas.toDataURL('image/jpeg', 1.0)
                     link.innerText = "다운로드";
 
                     link.href = URL.createObjectURL(blob);
