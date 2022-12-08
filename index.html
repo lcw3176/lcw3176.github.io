@@ -16,29 +16,11 @@
     <meta property="og:url" content="https://lcw3176.github.io/">
 
     <style>
-        html {
-            height: 100%;
+        html, body {
             margin: 0px;
             padding: 0px;
         }
 
-
-        body {
-            margin: 0px;
-            padding: 0px;
-            background: url('background.jpg');
-            background-repeat: no-repeat;
-            background-size: auto;
-            height: 150%;
-        }
-
-        #app {
-            min-height: 100%;
-            border-radius: 30px;
-            background-color: rgba(255, 255, 192, 0.1);
-            backdrop-filter: blur(1px);
-            box-shadow: 2px 7px 15px 8px rgba(0, 0, 0, 0.3);
-        }
 
         #imageSrc {
             width: 800px;
@@ -108,7 +90,7 @@
         <div class="columns">
             <div class="column is-half is-offset-one-quarter mt-5 has-text-centered">
                 <progress class="progress is-success" id="progressBar" value="0" max="100"></progress>
-                <a class="subtitle has-text-success" id="downloadLink"></button>
+                <a class="subtitle" id="downloadLink"></button>
             </div>
         </div>
 
