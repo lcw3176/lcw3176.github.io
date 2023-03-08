@@ -161,5 +161,5 @@ leaf node가 아닌 node에서는 자식의 포인터만 저장하고,
 
 
 #### 참고
-- https://www.youtube.com/watch?v=iNvYsGKelYs
+- 코딩애플, index가 뭔지 설명해보세요, https://www.youtube.com/watch?v=iNvYsGKelYs
 
