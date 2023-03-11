@@ -2,7 +2,7 @@
 date: 2023-03-11
 layout: post
 title: 도커 & 스프링 부트 메모리 사용량
-subtitle: '도커에서 스프링 부트가 구동되기 위한 최소 메모리'
+subtitle: '도커 & 스프링 부트가 구동되기 위한 최소 메모리'
 description: >-
 image: >-
   https://spring.io/img/spring-2.svg
