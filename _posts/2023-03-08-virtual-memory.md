@@ -5,11 +5,11 @@ title: 가상 메모리
 subtitle: '가상 메모리의 사용 이유, 그로 인한 이점'
 description: 가상 메모리의 사용 이유, 그로 인한 이점
 image: >-
-  https://cdn.pixabay.com/photo/2020/04/08/16/32/keyboard-5017973_960_720.jpg
+    https://img.shields.io/badge/virtual_memory-blue?style=for-the-badge
 category: cs
 author: coldrain
 ---
-## Index
+## Virtual Memory
 
 ### 소개
 

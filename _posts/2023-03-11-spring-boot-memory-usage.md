@@ -5,7 +5,7 @@ title: 도커 & 스프링 부트 메모리 사용량
 subtitle: '도커 & 스프링 부트가 구동되기 위한 최소 메모리'
 description: 도커 & 스프링 부트가 구동되기 위한 최소 메모리
 image: >-
-  https://spring.io/img/spring-2.svg
+  https://img.shields.io/badge/spring_&_docker-blue?style=for-the-badge
 category: cs
 author: coldrain
 ---

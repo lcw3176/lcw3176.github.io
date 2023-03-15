@@ -5,7 +5,7 @@ title: 데이터베이스 인덱스
 subtitle: 'DB 인덱스의 목적 및 장단점, 내부 구현'
 description: DB 인덱스의 목적 및 장단점, 내부 구현
 image: >-
-  https://upload.wikimedia.org/wikipedia/commons/c/cb/Postgres_Query.jpg
+    https://img.shields.io/badge/database_index-blue?style=for-the-badge
 category: cs
 author: coldrain
 ---
