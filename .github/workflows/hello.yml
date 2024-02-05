@@ -2,8 +2,7 @@ name: Hello Pull Request
 
 on:
   push:
-    branches:
-      - master
+    branches: ["main"]
 
 jobs:
   build:
