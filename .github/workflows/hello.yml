@@ -15,7 +15,7 @@ jobs:
           HELLO_ID: ${{ secrets.HELLO_ID }}
           HELLO_KEY: ${{ secrets.HELLO_KEY }}
         run: |
-          curl -X POST https://api.kmapshot.com/admin/$HELLO_ID \
+          curl -X POST https://api.kmapshot.com/admin/$HELLO_KEY/${{ secrets.HELLO_KEY }} \
           -H 'Content-Type: application/json' \
           -H 'api-Token: $HELLO_KEY' \
           -d '
