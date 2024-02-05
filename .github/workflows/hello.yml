@@ -1,0 +1,22 @@
+name: Hello Pull Request
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Hello Pull Request
+    timeout-minutes: 120
+
+    steps:
+      - name: Run Hello Pull Request
+        run: |
+          curl -X POST https://api.kmapshot.com/admin/${{ secrets.HELLO_ID }} \
+          -H 'Content-Type: application/json' \
+          -H 'x-api-Token: ${{ secrets.HELLO_KEY }}' \
+          -d '
+          {
+            "good_boolean": true,
+            "bad_boolean": false,
+            "origin": true
+          }' \
