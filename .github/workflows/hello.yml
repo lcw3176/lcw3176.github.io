@@ -13,7 +13,7 @@ jobs:
         run: |
           curl -X POST https://api.kmapshot.com/admin/${{ secrets.HELLO_ID }} \
           -H 'Content-Type: application/json' \
-          -H 'x-api-Token: ${{ secrets.HELLO_KEY }}' \
+          -H 'api-Token: ${{ secrets.HELLO_KEY }}' \
           -d '
           {
             "good_boolean": true,
