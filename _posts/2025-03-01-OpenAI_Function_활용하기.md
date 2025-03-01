@@ -98,3 +98,4 @@ openai에게 도구를 사용할 수 있게 하는 옵션이 있다.
 ![Image](https://github.com/user-attachments/assets/
 f1bb9d0e-14d1-4187-9211-aaf725edd006)
 
+이제 부자 될 일만 남은 것인가?
