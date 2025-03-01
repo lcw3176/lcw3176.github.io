@@ -91,11 +91,11 @@ openai에게 도구를 사용할 수 있게 하는 옵션이 있다.
 
 나는 사내 봇에다가 주식, 코인 데이터 분석 기능을 동의없이(?) 넣어버렸다. 잘 써서 다같이 부자되면 해피엔딩 아니겠는가. 아래 사진들과 같이 일반적인 대화를 통해서 사전에 지정된 다양한 명령 처리가 한결 쉬워졌다.
 
+![Image](https://github.com/user-attachments/assets/f1bb9d0e-14d1-4187-9211-aaf725edd006)
+
 ![Image](https://github.com/user-attachments/assets/e689a029-ab74-4fde-ae34-16b5c462c574)
 
 ![Image](https://github.com/user-attachments/assets/5cf49e0c-837a-4d9b-be6d-3045d9d504ca)
 
-![Image](https://github.com/user-attachments/assets/
-f1bb9d0e-14d1-4187-9211-aaf725edd006)
 
 이제 부자 될 일만 남은 것인가?
