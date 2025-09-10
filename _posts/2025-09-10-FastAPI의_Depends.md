@@ -8,6 +8,12 @@ image: https://github.com/user-attachments/assets/e0df9368-a814-4955-9b8a-695b5c
 
 ## DI와 IOC 컨테이너
 
+<img width="1622" height="570" alt="image" src="https://github.com/user-attachments/assets/ae8f6ef3-164f-4de6-8814-b09e9f76efb5" />
+
+<img width="1621" height="520" alt="image" src="https://github.com/user-attachments/assets/80e31cdb-71c0-47fd-a476-b8a7f62d1d0c" />
+
+<img width="811" height="628" alt="image" src="https://github.com/user-attachments/assets/7bbc349a-c1a4-43d4-a2f4-816078e969f4" />
+
 ## FastAPI의 Depends
 
 ## 파이썬은 왜?
