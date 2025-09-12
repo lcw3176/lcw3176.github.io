@@ -6,28 +6,135 @@ categories: [Backend]
 image: https://github.com/user-attachments/assets/e0df9368-a814-4955-9b8a-695b5c781a14
 ---
 
-## DI와 IOC 컨테이너
+## DI, IOC
 
-<img width="1622" height="570" alt="image" src="https://github.com/user-attachments/assets/ae8f6ef3-164f-4de6-8814-b09e9f76efb5" />
+우리는 종종 생성자를 통해 객체를 생성하고, 파라미터로 직접 넘겨준다.
 
-<img width="1621" height="520" alt="image" src="https://github.com/user-attachments/assets/80e31cdb-71c0-47fd-a476-b8a7f62d1d0c" />
+```python
+repo = UserRepository()
+service = UserService(repo=repo)
+````
 
-<img width="811" height="628" alt="image" src="https://github.com/user-attachments/assets/7bbc349a-c1a4-43d4-a2f4-816078e969f4" />
+하지만 소스의 규모가 커질수록 이런 방식은 변경에 취약해지고, 각 클래스들의 의존성 관계가 복잡해지며 관리의 어려움을 느끼게 된다.
+
+이를 해결하는 방법론 중 하나가 제어권을 외부로 역전시켜 객체 생성과 관리 권한을 애플리케이션 코드가 아닌 외부 컨테이너, 프레임워크에 맡기는 것이다.
+
+개발자는 “무엇이 필요하다”만 선언하고, 실제 객체를 어떻게 만들고 연결할지는 외부의 판단에 맡긴다.
+
+## 스프링 빈 컨테이너
+
+<img alt="image" src="https://github.com/user-attachments/assets/ae8f6ef3-164f-4de6-8814-b09e9f76efb5" />
+
+<img alt="image" src="https://github.com/user-attachments/assets/80e31cdb-71c0-47fd-a476-b8a7f62d1d0c" />
+
+스프링 프레임워크는 빈과 컨테이너라는 개념을 적극적으로 활용한다.
+스프링 부트는 어노테이션을 이용해 생성이 필요한 클래스들을 마킹해주고, 어플리케이션이 시작될 때 컨테이너에 클래스들을 생성, 런타임동안 활용할 수 있도록 도와준다. 
+
+<img alt="image" src="https://github.com/user-attachments/assets/7bbc349a-c1a4-43d4-a2f4-816078e969f4" />
+
+별도의 정책 설정이 없다면 기본적으로 싱글톤 방식으로 동작한다. 한 번 생성한 인스턴스를 어플리케이션 종료 전까지 계속해서 활용하는 방식이다.
+
+생성자, 필드, 메서드 인젝션 등으로 의존성을 주입하며 특정 AOP 관련 어노테이션들을 활용할때는(Transactional, Async...) 프록시 방식에 유념하며 개발을 진행해야 한다.
+
 
 ## FastAPI의 Depends
 
-## 파이썬은 왜?
+```python
+
+@lru_cache
+def get_role_service():
+    return RolesService()
+
+@router.get("/hello")
+async def hello(role_service: RolesService = Depends(get_role_service)):
+    # blabla...
+
+```
+
+파이썬, FasatAPI에도 의존 주입 기능이 존재한다.
+
+그러나 FastAPI의 Depends는 함수 호출 시점의 의존성 주입에 가깝다.
+요청마다 새로운 컨텍스트가 만들어지고, 해당 요청의 라이프사이클 안에서 Depends가 실행된다. FastAPI는 함수 호출 체인에 맞춰 필요한 값을 만들어 넣어주는 방식이지,
+객체의 생명주기 관리까지 해주는 IoC 컨테이너는 아니다.
+
+lru_cache같은 데코레이터를 사용하지 않는다면 요청마다 새로운 객체가 만들어진다.  
 
 ## 가비지 컬렉션
 
+두 언어, 프레임워크 사용 방식이 왜 각자의 방식으로 발전했을지 궁금해서 자료들을 찾아보며 생각을 해봤다. 먼저 둘의 GC 방식이 많은 차이가 있다. 
+
+파이썬의 기본 GC 메커니즘은 참조 카운팅 방식이다.
+객체가 몇 군데에서 참조되는지 카운팅하고, 참조가 다 끊기면서 0이 된다면 즉시 메모리 가 해제된다.
+
+순환 참조가 되어 있는 객체들은 특정 임계값 초과시 GC가 동작한다.
+
+```python
+import sys
+
+a = []
+print(sys.getrefcount(a)) 
+print(gc.get_threshold())   # (700, 10, 10)
+print(gc.get_count())       # (gen0, gen1, gen2)
+```
+
+위와 같은 값으로 설정 시 700번 객체가 생성/해제되면 gen0의 객체들을 검사하고,
+gen0을 10번 검사하면 gen1, gen1을 10번 검사하면 gen2를 검사한다.
+gen0 -> gen1 -> gen2로 넘어갈수록 오래 생존한 객체들이다. 자바의 에덴, s0, s1, 올드젠과 유사한 구조라고 생각하면 될 것 같다.
+
+함수 스코프와 gc 타이밍이 큰 차이가 없다는 말을 보고 내부 구현이 궁금해서 코드를 직접 찾아보려다가 gpt의 도움을 좀 받아봤다.
+
+```c
+// 참조 증가
+#define Py_INCREF(op) (op->ob_refcnt++)
+
+// 참조 감소
+#define Py_DECREF(op)                   \
+    if (--op->ob_refcnt == 0)           \
+        _Py_Dealloc((PyObject *)(op));  // 참조 0이면 해제
+```
+
+CPython 인터프리터는 객체를 사용할 때마다 Py_INCREF / Py_DECREF 매크로를 호출한다고 한다. 참조 카운트가 0이 되는 순간 바로 _Py_Dealloc의 내부 조건문에 걸리는 구조인 셈이다.
+
+가만히 생각해보니 파이썬은 원시 타입조차 흔하지 않고, 모든 걸 객체로 취급하는 이점을 여기서 잘 살릴수 있겠다 싶어서 조금 더 물어봤다.
+
+```c
+typedef struct _object {
+    // ...
+    Py_ssize_t ob_refcnt;   // 참조 카운트
+    struct _typeobject *ob_type;  // 타입 정보
+    // ...
+} PyObject;
+```
+
+CPython에서의 모든 객체의 최상위 구조체는 PyObject라고 하며, 이 구조체에 객체가 해제될 수 있는 참조 카운트 정보가 담겨 있다고 한다. 처음 파이썬을 접할 때는 '죄다 객체면 힙 메모리가 남아나질 않겠네' 라는 생각도 했는데, 일관된 객체 설계 방식이 오히려 메모리 구조를 간소화 할 수 있겠다 라는 생각이 들었다.
+
+그러면 자바는 왜 이런 방식을 택하지 않았던 걸까?
+
 ## GIL과 멀티 스레드
 
-## CPython의 GC, PyObject
+<img alt="image" src="https://github.com/user-attachments/assets/f73cfca5-a8c4-44c3-93a7-4da1510e70b4" />
 
-## 자바의 GC 트리거
 
-<img width="788" height="402" alt="image" src="https://github.com/user-attachments/assets/f73cfca5-a8c4-44c3-93a7-4da1510e70b4" />
+<img alt="image" src="https://github.com/user-attachments/assets/b995f5c3-e6e6-40c0-8b47-87d481d8985a" />
 
-<img width="1593" height="805" alt="image" src="https://github.com/user-attachments/assets/b57f2861-cb8f-4418-b8b8-ff2c15d5d298" />
+먼저 자바는 참조 카운트 기반이 아닌 Tracing GC 기반이다.
+마크 앤 스윕 방식이라고도 많이 표현하고, GC 실행 이후 메모리 파편화를 줄이려는 시도도 계속되고 있다. 어떤 루트 객체에서 그래프를 따라가며 생존한 객체를 탐색, 마킹하고 더 이상 사용하지 않는 객체는 해제, 스윕을 진행하는 게 기본 골조이다.
+메모리 사용량 모니터링 경험이 있다면, GC 타이밍에 맞게 절벽이 생기는 그래프를 자주 봤을 것이라 생각한다.
 
-<img width="1598" height="850" alt="image" src="https://github.com/user-attachments/assets/b995f5c3-e6e6-40c0-8b47-87d481d8985a" />
+참조가 0이 되면 바로 해제하는 방식이 아니라, GC가 돌 때 루트에서 닿지 않는 객체를 정리하는 구조인 셈이다.
+객체의 메모리 할당 해제는 GC 실행 시점에 달려 있는데, 문제는 GC 타이밍이 예측 불가능하다는 점이다.
+
+GC 과정에서 스탑 더 월드라는 이벤트가 발생하는데, 모든 스레드가 잠시 멈추게 된다.
+대규모 트래픽을 처리하는 서비스에서는 상당히 신경 쓰이는 요소이고, JVM 진영도 이를 모를리 없기 때문에 필요할 때, 최대한 늦게 GC를 실행할 수 있도록 HotSpotVM이 발전해왔다. 여담으로 여기 코드는 찾아볼 엄두도 안난다. 코드 복잡도가 끝까지 올라가서 개발자들도 지지치고 그랄vm으로 넘어가는 마당에... 어쨌뜬 영 제네레이션의 마이너 GC는 비교적 빠른 편이기 떄문에 큰 부담이 없겠지만 올드 제네레이션을 청소하는 메이저 GC같은 경우는 이보다 훨씬 더 많은 시간이 소요된다. 
+
+그렇다면 왜 자바는 파이썬과 같은 참조 카운팅, 즉시 해제 방식이 사용되지 않은 걸까??
+
+<img alt="image" src="https://github.com/user-attachments/assets/b57f2861-cb8f-4418-b8b8-ff2c15d5d298" />
+
+
+자바는 멀티 스레드가 기본 동작 방식이다. 이는 곧 모든 스레드가 동시에 객체를 생성, 소비하고 있다는 뜻이기도 하다. 만약 여기서 객체 카운팅을 쓴다면 참조 증감 연산이 원자적이어야 한다. 말만 들어도 스레드 충돌, 캐시 동기화 비용이 엄청날 것 같지 않은가?? 저 많은 스레드들이 다 아토믹 연산을 때린다면 성능 손해를 너무나도 많이 감수해야 한다. 트레이싱 방식은 주어진 상황 속에서 최선의 선택이었던 것이다.
+
+이런 관점에서 본다면 파이썬은 글로벌 인터프리터 락을 통해 GC에서는 꽤나 이점을 얻고 있는 셈이다.
+스레드 간 경합 없이 안전하게 참조 카운트 조작이 처리 가능하고, 심플한 GC 트리거 구조를 구성할 수 있게 되었다. 물론 GIL 때문에 CPU 바운드 작업 같은 경우는 성능 손실이 있고, GC도 메인 스레드에서 작동한다는 뜻이기도 하지만, 세상만사 완벽한게 어디 있겠나. 이런 특징들을 숙지하고 상황에 따라 잘 선택하면 될 것 같다. 
+
+
