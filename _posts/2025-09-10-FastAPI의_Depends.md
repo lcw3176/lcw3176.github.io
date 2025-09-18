@@ -57,7 +57,22 @@ async def hello(role_service: RolesService = Depends(get_role_service)):
 요청마다 새로운 컨텍스트가 만들어지고, 해당 요청의 라이프사이클 안에서 Depends가 실행된다. FastAPI는 함수 호출 체인에 맞춰 필요한 값을 만들어 넣어주는 방식이지,
 객체의 생명주기 관리까지 해주는 IoC 컨테이너는 아니다.
 
+```python
+@final
+class _lru_cache_wrapper(Generic[_T]):
+    __wrapped__: Callable[..., _T]
+    def __call__(self, *args: Hashable, **kwargs: Hashable) -> _T: ...
+    def cache_info(self) -> _CacheInfo: ...
+    def cache_clear(self) -> None: ...
+    if sys.version_info >= (3, 9):
+        def cache_parameters(self) -> _CacheParameters: ...
+
+    def __copy__(self) -> _lru_cache_wrapper[_T]: ...
+    def __deepcopy__(self, memo: Any, /) -> _lru_cache_wrapper[_T]: ...
+```
 lru_cache같은 데코레이터를 사용하지 않는다면 요청마다 새로운 객체가 만들어진다.  
+참고로 lru_cache는 maxsize 파라미터의 기본값은 128이고, 해싱값이 다르게 나와면 카운트가 시작된다.
+그 이상 생성시 lru(Least Recently Used)알고리즘에 따라 오래된 객체들이 제거된다.
 
 ## 가비지 컬렉션
 
@@ -91,6 +106,110 @@ gen0 -> gen1 -> gen2로 넘어갈수록 오래 생존한 객체들이다. 자바
 #define Py_DECREF(op)                   \
     if (--op->ob_refcnt == 0)           \
         _Py_Dealloc((PyObject *)(op));  // 참조 0이면 해제
+
+// 최신 버전, 3.15
+// https://github.com/python/cpython/blob/6504f20ccedf0b27275327e72698dee5f0c75ba8/Include/refcount.h#L249
+
+static inline Py_ALWAYS_INLINE void Py_INCREF(PyObject *op)
+{
+#if defined(Py_LIMITED_API) && (Py_LIMITED_API+0 >= 0x030c0000 || defined(Py_REF_DEBUG))
+    // Stable ABI implements Py_INCREF() as a function call on limited C API
+    // version 3.12 and newer, and on Python built in debug mode. _Py_IncRef()
+    // was added to Python 3.10.0a7, use Py_IncRef() on older Python versions.
+    // Py_IncRef() accepts NULL whereas _Py_IncRef() doesn't.
+#  if Py_LIMITED_API+0 >= 0x030a00A7
+    _Py_IncRef(op);
+#  else
+    Py_IncRef(op);
+#  endif
+#else
+    // Non-limited C API and limited C API for Python 3.9 and older access
+    // directly PyObject.ob_refcnt.
+#if defined(Py_GIL_DISABLED)
+    uint32_t local = _Py_atomic_load_uint32_relaxed(&op->ob_ref_local);
+    uint32_t new_local = local + 1;
+    if (new_local == 0) {
+        _Py_INCREF_IMMORTAL_STAT_INC();
+        // local is equal to _Py_IMMORTAL_REFCNT_LOCAL: do nothing
+        return;
+    }
+    if (_Py_IsOwnedByCurrentThread(op)) {
+        _Py_atomic_store_uint32_relaxed(&op->ob_ref_local, new_local);
+    }
+    else {
+        _Py_atomic_add_ssize(&op->ob_ref_shared, (1 << _Py_REF_SHARED_SHIFT));
+    }
+#elif SIZEOF_VOID_P > 4
+    PY_UINT32_T cur_refcnt = op->ob_refcnt;
+    if (cur_refcnt >= _Py_IMMORTAL_INITIAL_REFCNT) {
+        // the object is immortal
+        _Py_INCREF_IMMORTAL_STAT_INC();
+        return;
+    }
+    op->ob_refcnt = cur_refcnt + 1;
+#else
+    if (_Py_IsImmortal(op)) {
+        _Py_INCREF_IMMORTAL_STAT_INC();
+        return;
+    }
+    op->ob_refcnt++;
+#endif
+    _Py_INCREF_STAT_INC();
+#ifdef Py_REF_DEBUG
+    // Don't count the incref if the object is immortal.
+    if (!_Py_IsImmortal(op)) {
+        _Py_INCREF_IncRefTotal();
+    }
+#endif
+#endif
+}
+#if !defined(Py_LIMITED_API) || Py_LIMITED_API+0 < 0x030b0000
+#  define Py_INCREF(op) Py_INCREF(_PyObject_CAST(op))
+#endif
+
+
+// https://github.com/python/cpython/blob/6504f20ccedf0b27275327e72698dee5f0c75ba8/Include/refcount.h#L383
+
+static inline void Py_DECREF(const char *filename, int lineno, PyObject *op)
+{
+#if SIZEOF_VOID_P > 4
+    /* If an object has been freed, it will have a negative full refcnt
+     * If it has not it been freed, will have a very large refcnt */
+    if (op->ob_refcnt_full <= 0 || op->ob_refcnt > (((PY_UINT32_T)-1) - (1<<20))) {
+#else
+    if (op->ob_refcnt <= 0) {
+#endif
+        _Py_NegativeRefcount(filename, lineno, op);
+    }
+    if (_Py_IsImmortal(op)) {
+        _Py_DECREF_IMMORTAL_STAT_INC();
+        return;
+    }
+    _Py_DECREF_STAT_INC();
+    _Py_DECREF_DecRefTotal();
+    if (--op->ob_refcnt == 0) {
+        _Py_Dealloc(op);
+    }
+}
+#define Py_DECREF(op) Py_DECREF(__FILE__, __LINE__, _PyObject_CAST(op))
+
+#else
+
+static inline Py_ALWAYS_INLINE void Py_DECREF(PyObject *op)
+{
+    // Non-limited C API and limited C API for Python 3.9 and older access
+    // directly PyObject.ob_refcnt.
+    if (_Py_IsImmortal(op)) {
+        _Py_DECREF_IMMORTAL_STAT_INC();
+        return;
+    }
+    _Py_DECREF_STAT_INC();
+    if (--op->ob_refcnt == 0) {
+        _Py_Dealloc(op);
+    }
+}
+#define Py_DECREF(op) Py_DECREF(_PyObject_CAST(op))
+#endif
 ```
 
 CPython 인터프리터는 객체를 사용할 때마다 Py_INCREF / Py_DECREF 매크로를 호출한다고 한다. 참조 카운트가 0이 되는 순간 바로 _Py_Dealloc의 내부 조건문에 걸리는 구조인 셈이다.
@@ -104,6 +223,22 @@ typedef struct _object {
     struct _typeobject *ob_type;  // 타입 정보
     // ...
 } PyObject;
+
+
+// 최신 버전, 3.15
+// https://github.com/python/cpython/blob/6504f20ccedf0b27275327e72698dee5f0c75ba8/Include/object.h#L156
+struct _object {
+    // ob_tid stores the thread id (or zero). It is also used by the GC and the
+    // trashcan mechanism as a linked list pointer and by the GC to store the
+    // computed "gc_refs" refcount.
+    _Py_ALIGNED_DEF(_PyObject_MIN_ALIGNMENT, uintptr_t) ob_tid;
+    uint16_t ob_flags;
+    PyMutex ob_mutex;           // per-object lock
+    uint8_t ob_gc_bits;         // gc-related state
+    uint32_t ob_ref_local;      // local reference count
+    Py_ssize_t ob_ref_shared;   // shared (atomic) reference count
+    PyTypeObject *ob_type;
+};
 ```
 
 CPython에서의 모든 객체의 최상위 구조체는 PyObject라고 하며, 이 구조체에 객체가 해제될 수 있는 참조 카운트 정보가 담겨 있다고 한다. 처음 파이썬을 접할 때는 '죄다 객체면 힙 메모리가 남아나질 않겠네' 라는 생각도 했는데, 일관된 객체 설계 방식이 오히려 메모리 구조를 간소화 할 수 있겠다 라는 생각이 들었다.
